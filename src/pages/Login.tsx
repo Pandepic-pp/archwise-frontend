@@ -55,7 +55,7 @@ export default function Login() {
           <div className="inline-flex items-center justify-center h-14 w-14 rounded-2xl bg-brand-600 mb-4 text-2xl">
             🏗️
           </div>
-          <h1 className="text-2xl font-bold text-white">SystemDesignAI</h1>
+          <h1 className="text-2xl font-bold text-white">ArchWise</h1>
           <p className="text-gray-400 text-sm mt-1">AI-Powered HLD Interview Simulator</p>
         </div>
 

@@ -76,8 +76,7 @@ export default function Home() {
       {/* Nav */}
       <nav className="border-b border-surface-700 px-6 py-4 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <span className="text-xl">🏗️</span>
-          <span className="font-bold text-white">SystemDesignAI</span>
+          <span className="font-bold text-white">ArchWise</span>
           <span className="text-xs px-2 py-0.5 rounded-full bg-brand-500/20 text-brand-400 border border-brand-500/30">beta</span>
         </div>
         <div className="flex items-center gap-3">
