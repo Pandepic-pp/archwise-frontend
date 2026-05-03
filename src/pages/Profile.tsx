@@ -2,6 +2,7 @@ import { useState, FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { authApi } from '../services/api';
+import PasswordInput from '../components/common/PasswordInput';
 
 export default function Profile() {
   const { user, logout } = useAuth();
@@ -96,8 +97,7 @@ export default function Profile() {
           <form onSubmit={handleChangePassword} className="p-6 space-y-4">
             <div>
               <label className="text-xs font-medium text-gray-400 block mb-1.5">Current Password</label>
-              <input
-                type="password"
+              <PasswordInput
                 value={currentPassword}
                 onChange={(e) => setCurrentPassword(e.target.value)}
                 placeholder="••••••••"
@@ -108,8 +108,7 @@ export default function Profile() {
 
             <div>
               <label className="text-xs font-medium text-gray-400 block mb-1.5">New Password</label>
-              <input
-                type="password"
+              <PasswordInput
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
                 placeholder="At least 6 characters"
@@ -121,8 +120,7 @@ export default function Profile() {
 
             <div>
               <label className="text-xs font-medium text-gray-400 block mb-1.5">Confirm New Password</label>
-              <input
-                type="password"
+              <PasswordInput
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="Re-enter new password"

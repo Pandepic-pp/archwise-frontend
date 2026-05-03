@@ -2,6 +2,7 @@ import { useState, FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { authApi } from '../services/api';
+import PasswordInput from '../components/common/PasswordInput';
 
 type Tab = 'login' | 'earlyAccess';
 type EarlyAccessStep = 'form' | 'otp' | 'success';
@@ -127,8 +128,7 @@ export default function Login() {
 
               <div>
                 <label className="text-xs font-medium text-gray-400 block mb-1.5">Password</label>
-                <input
-                  type="password"
+                <PasswordInput
                   value={loginPassword}
                   onChange={(e) => setLoginPassword(e.target.value)}
                   placeholder="••••••••"
