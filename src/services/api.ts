@@ -2,7 +2,8 @@ import axios from 'axios';
 
 const api = axios.create({
   //baseURL:  'https://archwise-backend.onrender.com/api',
-  baseURL:  '/api',
+  //baseURL:  '/api',
+  baseURL: 'http://localhost:5000/api',
   timeout: 30000,
 });
 
@@ -28,12 +29,20 @@ api.interceptors.response.use(
 
 // ─── Auth ─────────────────────────────────────────────────────────────────────
 export const authApi = {
-  register: (data: { email: string; password: string; name: string }) =>
-    api.post('/auth/register', data),
+  // register: (data: { email: string; password: string; name: string }) =>
+  //   api.post('/auth/register', data), // replaced by early access flow
+
+  earlyAccessRequest: (data: { name: string; email: string }) =>
+    api.post('/auth/early-access/request', data),
+  earlyAccessVerify: (data: { email: string; otp: string }) =>
+    api.post('/auth/early-access/verify', data),
+
   login: (data: { email: string; password: string }) =>
     api.post('/auth/login', data),
   guest: () => api.post('/auth/guest'),
   me: () => api.get('/auth/me'),
+  changePassword: (data: { currentPassword: string; newPassword: string }) =>
+    api.put('/auth/change-password', data),
 };
 
 // ─── Questions ────────────────────────────────────────────────────────────────

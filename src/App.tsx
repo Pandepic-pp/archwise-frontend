@@ -4,6 +4,7 @@ import Login from './pages/Login';
 import Home from './pages/Home';
 import Interview from './pages/Interview';
 import Results from './pages/Results';
+import Profile from './pages/Profile';
 import LoadingSpinner from './components/common/LoadingSpinner';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -26,6 +27,7 @@ function AppRoutes() {
       <Route path="/" element={<ProtectedRoute><Home /></ProtectedRoute>} />
       <Route path="/interview/:id" element={<ProtectedRoute><Interview /></ProtectedRoute>} />
       <Route path="/results/:id" element={<ProtectedRoute><Results /></ProtectedRoute>} />
+      <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );

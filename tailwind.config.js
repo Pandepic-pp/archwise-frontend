@@ -33,6 +33,7 @@ export default {
         'fade-in': 'fadeIn 0.3s ease-out',
         'slide-up': 'slideUp 0.3s ease-out',
         'recording-ring': 'recordingRing 1.5s ease-in-out infinite',
+        'fade-in-up': 'fadeInUp 0.25s ease-out',
       },
       keyframes: {
         fadeIn: { '0%': { opacity: '0' }, '100%': { opacity: '1' } },
@@ -40,6 +41,10 @@ export default {
         recordingRing: {
           '0%, 100%': { boxShadow: '0 0 0 0 rgba(239, 68, 68, 0.4)' },
           '50%': { boxShadow: '0 0 0 12px rgba(239, 68, 68, 0)' },
+        },
+        fadeInUp: {
+          '0%': { opacity: '0', transform: 'translateX(-50%) translateY(12px)' },
+          '100%': { opacity: '1', transform: 'translateX(-50%) translateY(0)' },
         },
       },
     },
