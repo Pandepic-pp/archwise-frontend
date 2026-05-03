@@ -1,7 +1,8 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL:  'https://archwise-backend.onrender.com/api',
+  //baseURL:  'https://archwise-backend.onrender.com/api',
+  baseURL:  '/api',
   timeout: 30000,
 });
 

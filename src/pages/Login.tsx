@@ -52,9 +52,9 @@ export default function Login() {
 
         {/* Brand */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center h-14 w-14 rounded-2xl bg-brand-600 mb-4 text-2xl">
+          {/* <div className="inline-flex items-center justify-center h-14 w-14 rounded-2xl bg-brand-600 mb-4 text-2xl">
             🏗️
-          </div>
+          </div> */}
           <h1 className="text-2xl font-bold text-white">ArchWise</h1>
           <p className="text-gray-400 text-sm mt-1">AI-Powered HLD Interview Simulator</p>
         </div>
@@ -134,7 +134,7 @@ export default function Login() {
         </div>
 
         {/* Guest mode */}
-        <div className="mt-4 text-center">
+        {/* <div className="mt-4 text-center">
           <p className="text-xs text-gray-500 mb-2">Just want to try it out?</p>
           <button
             onClick={handleGuest}
@@ -143,7 +143,7 @@ export default function Login() {
           >
             Continue as Guest (Demo Mode)
           </button>
-        </div>
+        </div> */}
       </div>
     </div>
   );
