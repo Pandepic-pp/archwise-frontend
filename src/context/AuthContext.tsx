@@ -4,6 +4,7 @@ import { authApi } from '../services/api';
 
 interface AuthContextValue extends AuthState {
   login: (email: string, password: string) => Promise<void>;
+  loginWithToken: (token: string, user: User) => void;
   guestLogin: () => Promise<void>;
   logout: () => void;
 }
@@ -71,6 +72,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     persistAuth(data.user, data.token);
   };
 
+  const loginWithToken = (token: string, user: User) => {
+    persistAuth(user, token);
+  };
+
   const guestLogin = async () => {
     const { data } = await authApi.guest();
     persistAuth(data.user, data.token);
@@ -83,7 +88,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ ...state, login, guestLogin, logout }}>
+    <AuthContext.Provider value={{ ...state, login, loginWithToken, guestLogin, logout }}>
       {children}
     </AuthContext.Provider>
   );

@@ -29,13 +29,10 @@ api.interceptors.response.use(
 
 // ─── Auth ─────────────────────────────────────────────────────────────────────
 export const authApi = {
-  // register: (data: { email: string; password: string; name: string }) =>
-  //   api.post('/auth/register', data), // replaced by early access flow
-
-  earlyAccessRequest: (data: { name: string; email: string }) =>
-    api.post('/auth/early-access/request', data),
-  earlyAccessVerify: (data: { email: string; otp: string }) =>
-    api.post('/auth/early-access/verify', data),
+  register: (data: { name: string; email: string; password: string }) =>
+    api.post('/auth/register', data),
+  registerVerify: (data: { email: string; otp: string }) =>
+    api.post('/auth/register/verify', data),
 
   login: (data: { email: string; password: string }) =>
     api.post('/auth/login', data),
