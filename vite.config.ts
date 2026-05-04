@@ -15,11 +15,11 @@ export default defineConfig({
     port: 5173,
     proxy: {
       '/api': {
-        target: 'https://archwise.konnecthr.online',
+        target: 'http://localhost:5000',
         changeOrigin: true,
       },
       '/socket.io': {
-        target: 'https://archwise.konnecthr.online',
+        target: 'http://localhost:5000',
         changeOrigin: true,
         ws: true,
       },

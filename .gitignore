@@ -1,3 +1,4 @@
 node_modules
 .env
 src/services/api.ts
+vite.config.ts

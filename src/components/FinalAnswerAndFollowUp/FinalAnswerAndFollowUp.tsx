@@ -64,13 +64,19 @@ export default function FinalAnswerAndFollowUp({
     startRecording();
   }, [finalRecordingReady, startRecording]);
 
+  // If follow-up generation returned an empty array, skip straight to evaluation
+  useEffect(() => {
+    if (sessionStatus !== 'followUp' || followUpQuestions.length !== 0) return;
+    onAllFollowUpsAnswered();
+  }, [sessionStatus, followUpQuestions.length, onAllFollowUpsAnswered]);
+
   // Reset and start read countdown for each new follow-up question
   useEffect(() => {
-    if (sessionStatus !== 'followUp') return;
+    if (sessionStatus !== 'followUp' || followUpQuestions.length === 0) return;
     setFollowPhase('reading');
     setFollowRecordingReady(false);
     startFollowCountdown();
-  }, [currentFollowUpIndex, sessionStatus, startFollowCountdown]);
+  }, [currentFollowUpIndex, sessionStatus, followUpQuestions.length, startFollowCountdown]);
 
   // Auto-start follow-up recording when read countdown hits 0
   useEffect(() => {
