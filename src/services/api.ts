@@ -63,7 +63,6 @@ export const sessionApi = {
     interactionType: string;
     socketRoomId: string;
     diagramJson?: string;
-    diagramImageBase64?: string;
   }) => {
     const formData = new FormData();
     formData.append('audio', data.audio, 'recording.webm');
@@ -71,7 +70,6 @@ export const sessionApi = {
     formData.append('interactionType', data.interactionType);
     formData.append('socketRoomId', data.socketRoomId);
     if (data.diagramJson) formData.append('diagramJson', data.diagramJson);
-    if (data.diagramImageBase64) formData.append('diagramImageBase64', data.diagramImageBase64);
     return api.post('/sessions/audio', formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
       timeout: 60000,
@@ -107,6 +105,13 @@ export const sessionApi = {
     diagramTextDescription: string;
     diagramImageBase64?: string;
   }) => api.post('/sessions/discuss-diagram', data),
+};
+
+// ─── Admin ────────────────────────────────────────────────────────────────────
+export const adminApi = {
+  dashboard: () => api.get('/admin/dashboard'),
+  users: () => api.get('/admin/users'),
+  userDetail: (userId: string) => api.get(`/admin/users/${userId}`),
 };
 
 export default api;

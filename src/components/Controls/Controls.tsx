@@ -95,24 +95,20 @@ export default function Controls({
     onProcessingStart('Transcribing your response...');
 
     try {
-      const [sceneJson, imageBase64] = await Promise.all([
-        Promise.resolve(getSceneJson()),
-        getSceneImageBase64(),
-      ]);
+      const sceneJson = getSceneJson();
       await sessionApi.submitAudio({
         audio: blob,
         sessionId,
         interactionType: activeType,
         socketRoomId: sessionId,
         diagramJson: sceneJson,
-        diagramImageBase64: imageBase64 ?? undefined,
       });
     } catch {
       onError('Failed to submit audio. Please try again.');
     } finally {
       setActiveType(null);
     }
-  }, [activeType, stopRecording, sessionId, getSceneJson, getSceneImageBase64, onProcessingStart, onError]);
+  }, [activeType, stopRecording, sessionId, getSceneJson, onProcessingStart, onError]);
 
   const handleDiscussDrawing = useCallback(async () => {
     if (isAnalyzing || disabled) return;
