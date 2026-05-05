@@ -47,6 +47,10 @@ export const questionApi = {
   list: () => api.get('/questions'),
   get: (id: string) => api.get(`/questions/${id}`),
   random: () => api.get('/questions/random'),
+  updatePractice: (
+    id: string,
+    data: { notes?: string; isDone?: boolean; reviewLater?: boolean }
+  ) => api.patch(`/questions/${id}/practice`, data),
 };
 
 // ─── Sessions ─────────────────────────────────────────────────────────────────

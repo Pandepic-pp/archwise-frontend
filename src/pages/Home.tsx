@@ -1,9 +1,9 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
 import { questionApi, sessionApi } from '../services/api';
-import { Question, InterviewSession } from '../types';
+import { Question, InterviewSession, QuestionPractice } from '../types';
 import LoadingSpinner from '../components/common/LoadingSpinner';
+import AppNavbar from '../components/AppNavbar';
 
 const DIFFICULTY_RANK: Record<string, number> = { medium: 1, hard: 2, expert: 3 };
 
@@ -50,8 +50,8 @@ export default function Home() {
   const [search, setSearch] = useState('');
   const [sortDir, setSortDir] = useState<'none' | 'asc' | 'desc'>('none');
   const [toast, setToast] = useState('');
+  const [savingPractice, setSavingPractice] = useState<Record<string, boolean>>({});
 
-  const { user, logout } = useAuth();
   const navigate = useNavigate();
 
   const dismissToast = useCallback(() => setToast(''), []);
@@ -76,6 +76,18 @@ export default function Home() {
     }
     return result;
   }, [questions, search, sortDir]);
+
+  const practiceStats = useMemo(() => {
+    return questions.reduce(
+      (acc, question) => {
+        if (question.practice?.isDone) acc.done += 1;
+        if (question.practice?.reviewLater) acc.reviewLater += 1;
+        if (question.practice?.notes.trim()) acc.withNotes += 1;
+        return acc;
+      },
+      { done: 0, reviewLater: 0, withNotes: 0 }
+    );
+  }, [questions]);
 
   useEffect(() => {
     const load = async () => {
@@ -127,6 +139,38 @@ export default function Home() {
     }
   };
 
+  const patchQuestionPractice = (questionId: string, practice: Partial<QuestionPractice>) => {
+    setQuestions((current) =>
+      current.map((question) =>
+        question._id === questionId
+          ? {
+              ...question,
+              practice: {
+                notes: question.practice?.notes ?? '',
+                isDone: question.practice?.isDone ?? false,
+                reviewLater: question.practice?.reviewLater ?? false,
+                ...practice,
+              },
+            }
+          : question
+      )
+    );
+  };
+
+  const handlePracticeUpdate = async (questionId: string, practice: Partial<QuestionPractice>) => {
+    patchQuestionPractice(questionId, practice);
+    setSavingPractice((current) => ({ ...current, [questionId]: true }));
+    try {
+      const { data } = await questionApi.updatePractice(questionId, practice);
+      patchQuestionPractice(questionId, data.practice);
+    } catch (err) {
+      console.error(err);
+      setToast('Could not save your question notes. Please try again.');
+    } finally {
+      setSavingPractice((current) => ({ ...current, [questionId]: false }));
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-surface-900 flex items-center justify-center">
@@ -139,25 +183,7 @@ export default function Home() {
     <div className="min-h-screen bg-surface-900">
       {toast && <Toast message={toast} onDismiss={dismissToast} />}
 
-      {/* Nav */}
-      <nav className="border-b border-surface-700 px-4 sm:px-6 py-3.5 flex items-center justify-between gap-4">
-        <div className="flex items-center gap-2 min-w-0">
-          <span className="font-bold text-white">ArchWise</span>
-          <span className="text-xs px-2 py-0.5 rounded-full bg-brand-500/20 text-brand-400 border border-brand-500/30">beta</span>
-        </div>
-        <div className="flex items-center gap-3 shrink-0">
-          <span className="hidden sm:inline text-sm text-gray-400 truncate max-w-[140px]">{user?.name}</span>
-          <button
-            onClick={() => navigate('/profile')}
-            className="text-xs text-gray-500 hover:text-gray-300 transition-colors"
-          >
-            Profile
-          </button>
-          <button onClick={logout} className="text-xs text-gray-500 hover:text-gray-300 transition-colors">
-            Sign Out
-          </button>
-        </div>
-      </nav>
+      <AppNavbar />
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-6 sm:space-y-8">
 
@@ -176,6 +202,20 @@ export default function Home() {
                     {f}
                   </span>
                 ))}
+              </div>
+              <div className="grid grid-cols-3 gap-2 mt-5 max-w-md">
+                <div className="rounded-xl bg-surface-800/80 border border-surface-600 px-3 py-2">
+                  <p className="text-lg font-bold text-white">{practiceStats.done}</p>
+                  <p className="text-xs text-gray-500">Done</p>
+                </div>
+                <div className="rounded-xl bg-surface-800/80 border border-surface-600 px-3 py-2">
+                  <p className="text-lg font-bold text-white">{practiceStats.reviewLater}</p>
+                  <p className="text-xs text-gray-500">Review</p>
+                </div>
+                <div className="rounded-xl bg-surface-800/80 border border-surface-600 px-3 py-2">
+                  <p className="text-lg font-bold text-white">{practiceStats.withNotes}</p>
+                  <p className="text-xs text-gray-500">Notes</p>
+                </div>
               </div>
             </div>
             <button
@@ -257,24 +297,73 @@ export default function Home() {
             {filteredQuestions.map((q) => (
               <div
                 key={q._id}
-                className="bg-surface-800 rounded-2xl border border-surface-600 p-4 sm:p-5 hover:border-surface-500 transition-colors group"
+                className={`bg-surface-800 rounded-2xl border p-4 sm:p-5 transition-colors group ${
+                  q.practice?.isDone
+                    ? 'border-green-500/35'
+                    : q.practice?.reviewLater
+                      ? 'border-brand-500/35'
+                      : 'border-surface-600 hover:border-surface-500'
+                }`}
               >
                 <div className="flex items-start justify-between gap-3 mb-2 sm:mb-3">
-                  <h3 className="font-semibold text-white text-sm leading-tight group-hover:text-brand-400 transition-colors">
-                    {q.title}
-                  </h3>
+                  <div className="min-w-0">
+                    <div className="flex flex-wrap items-center gap-1.5 mb-1.5">
+                      <button
+                        onClick={() => handlePracticeUpdate(q._id, { isDone: !q.practice?.isDone })}
+                        disabled={savingPractice[q._id]}
+                        className={`flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full border transition-colors disabled:opacity-50 ${
+                          q.practice?.isDone
+                            ? 'bg-green-500/10 text-green-400 border-green-500/30 hover:bg-green-500/20'
+                            : 'bg-surface-700 text-gray-500 border-surface-600 hover:text-gray-300 hover:border-surface-500'
+                        }`}
+                      >
+                        <svg className="w-2.5 h-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                        </svg>
+                        Done
+                      </button>
+                      <button
+                        onClick={() => handlePracticeUpdate(q._id, { reviewLater: !q.practice?.reviewLater })}
+                        disabled={savingPractice[q._id]}
+                        className={`flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full border transition-colors disabled:opacity-50 ${
+                          q.practice?.reviewLater
+                            ? 'bg-brand-500/10 text-brand-300 border-brand-500/30 hover:bg-brand-500/20'
+                            : 'bg-surface-700 text-gray-500 border-surface-600 hover:text-gray-300 hover:border-surface-500'
+                        }`}
+                      >
+                        <svg className="w-2.5 h-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                        </svg>
+                        Review later
+                      </button>
+                    </div>
+                    <h3 className="font-semibold text-white text-sm leading-tight group-hover:text-brand-400 transition-colors">
+                      {q.title}
+                    </h3>
+                  </div>
                   <span className={`text-xs font-medium px-2 py-0.5 rounded-full border shrink-0 ${difficultyColors[q.difficulty]}`}>
                     {q.difficulty}
                   </span>
                 </div>
                 <p className="text-xs text-gray-400 leading-relaxed line-clamp-2 mb-3">{q.prompt}</p>
+                <div className="mb-3">
+                  <label className="text-xs font-medium text-gray-500 block mb-1.5">Practice notes</label>
+                  <textarea
+                    value={q.practice?.notes ?? ''}
+                    onChange={(e) => patchQuestionPractice(q._id, { notes: e.target.value })}
+                    onBlur={(e) => handlePracticeUpdate(q._id, { notes: e.target.value })}
+                    placeholder="Write observations, weak spots, edge cases, or follow-up ideas..."
+                    rows={3}
+                    className="w-full resize-none bg-surface-900/70 border border-surface-600 rounded-xl px-3 py-2 text-xs text-gray-200 placeholder-gray-600 focus:outline-none focus:border-brand-500 leading-relaxed"
+                  />
+                </div>
                 <div className="flex items-center justify-between gap-2 flex-wrap">
                   <div className="flex flex-wrap gap-1">
                     {q.tags.slice(0, 3).map((t) => (
                       <span key={t} className="text-xs px-1.5 py-0.5 rounded-md bg-surface-700 text-gray-500">{t}</span>
                     ))}
                   </div>
-                  <div className="flex items-center gap-2 shrink-0">
+                  <div className="flex items-center gap-2 shrink-0 flex-wrap justify-end">
                     <span className="text-xs text-gray-500">⏱ {q.durationMinutes}m</span>
                     <button
                       onClick={() => handleStart(q._id)}

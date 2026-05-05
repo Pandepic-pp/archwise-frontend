@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import Login from './pages/Login';
 import Home from './pages/Home';
+import Learn from './pages/Learn';
 import Interview from './pages/Interview';
 import Results from './pages/Results';
 import Profile from './pages/Profile';
@@ -44,6 +45,10 @@ function AppRoutes() {
     <Routes>
       <Route path="/login" element={isAuthenticated ? <Navigate to="/" replace /> : <Login />} />
       <Route path="/" element={<ProtectedRoute><Home /></ProtectedRoute>} />
+      <Route path="/practice" element={<ProtectedRoute><Home /></ProtectedRoute>} />
+      <Route path="/learn" element={<ProtectedRoute><Navigate to="/learn/hld" replace /></ProtectedRoute>} />
+      <Route path="/learn/hld" element={<ProtectedRoute><Learn topic="HLD" /></ProtectedRoute>} />
+      <Route path="/learn/lld" element={<ProtectedRoute><Learn topic="LLD" /></ProtectedRoute>} />
       <Route path="/interview/:id" element={<ProtectedRoute><Interview /></ProtectedRoute>} />
       <Route path="/results/:id" element={<ProtectedRoute><Results /></ProtectedRoute>} />
       <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />

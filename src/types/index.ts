@@ -20,6 +20,13 @@ export interface RubricItem {
   weight: number;
 }
 
+export interface QuestionPractice {
+  notes: string;
+  isDone: boolean;
+  reviewLater: boolean;
+  updatedAt?: string | Date;
+}
+
 export interface Question {
   _id: string;
   title: string;
@@ -28,6 +35,7 @@ export interface Question {
   tags: string[];
   durationMinutes: number;
   rubric: RubricItem[];
+  practice?: QuestionPractice;
 }
 
 // ─── Session ──────────────────────────────────────────────────────────────────
